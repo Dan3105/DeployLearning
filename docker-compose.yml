@@ -27,7 +27,7 @@ services:
     networks:
       - wordpress-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$DB_ROOT_PASSWORD"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
       timeout: 30s
       retries: 5  
    
@@ -50,7 +50,9 @@ services:
   wordpress:
     depends_on:
       - database
-    image: wordpress:6.5.2-fpm-alpine
+    build:
+      context: ./wordpress
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
     environment:
@@ -59,13 +61,15 @@ services:
       WORDPRESS_DB_USER: '${DB_USER}'
       WORDPRESS_DB_PASSWORD: '${DB_PASSWORD}'
     volumes:
-      - ./src:/var/www/html
+      - ./src:/var/www/html:rw
     networks:
       - wordpress-network
 
 
 volumes:
   db-data: 
+  
+
 
 networks:
   wordpress-network:
