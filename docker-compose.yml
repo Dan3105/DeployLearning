@@ -51,7 +51,7 @@ services:
     depends_on:
       - database
     build:
-      context: ./wordpress
+      context: ./src
       dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
