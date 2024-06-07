@@ -1,0 +1,51 @@
+services:
+  nginx:
+    image: nginx:1.15.12-alpine
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:rw
+      - ./src:/var/www/html
+
+  database:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mysql:5.7.28
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    env_file: .env
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${DB_NAME}'
+      MYSQL_USER: '${DB_USER}'
+      MYSQL_PASSWORD: '${DB_ROOT_PASSWORD}'
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      timeout: 30s
+      retries: 5  
+   
+  wordpress:
+    depends_on:
+      - database
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      WORDPRESS_DB_HOST: database:3306
+      WORDPRESS_DB_NAME: '${DB_NAME}'
+      WORDPRESS_DB_USER: '${DB_USER}'
+      WORDPRESS_DB_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      - ./src:/var/www/html:rw
+
+
+volumes:
+  db-data: 
+  
+
+  
