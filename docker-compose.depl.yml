@@ -5,8 +5,8 @@ services:
     ports:
       - "8082:80"
     volumes:
-      - ./nginx:/etc/nginx/conf.d:rw
-      - ./src:/var/www/html
+      - ${WEBAPP_STORAGE_HOME}/nginx:/etc/nginx/conf.d:rw
+      - ${WEBAPP_STORAGE_HOME}/src:/var/www/html
 
   database:
     # We use a mariadb image which supports both amd64 & arm64 architecture
@@ -41,7 +41,7 @@ services:
       WORDPRESS_DB_USER: '${DB_USER}'
       WORDPRESS_DB_PASSWORD: '${DB_PASSWORD}'
     volumes:
-      - ./src:/var/www/html:rw
+      - ${WEBAPP_STORAGE_HOME}/src:/var/www/html:rw
 
 
 volumes:
