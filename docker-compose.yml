@@ -47,7 +47,9 @@ services:
   wordpress:
     depends_on:
       - database
-    image: wordpress:6.5.2-fpm-alpine
+    build: 
+      context: ./wordpress
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
     environment:
@@ -56,7 +58,7 @@ services:
       WORDPRESS_DB_USER: '${DB_USER}'
       WORDPRESS_DB_PASSWORD: '${DB_PASSWORD}'
     volumes:
-      - ./src:/var/www/html
+      - ./src:/var/www/html:rw
     networks:
       - wordpress-network
 
